@@ -1,4 +1,4 @@
-﻿namespace WorkdayCalendar.API.Services
+namespace WorkdayCalendar.API.Services
 {
     public class WorkDayCalculatorService : IWorkDayCalculatorService
     {
@@ -11,31 +11,44 @@
             _workdaySettingsService = workdaySettingsService;
         }
 
-        public DateTime CalculateWorkday(DateTime startDate, double workdaysToAdd)
+        public DateTime CalculateWorkday(DateTime startDate, decimal workdaysToAdd)
         {
             var direction = workdaysToAdd >= 0 ? 1 : -1;
 
-            if (_workdaySettingsService.StartTime == _workdaySettingsService.StopTime)
+            var workSecondsPerDay = _workdaySettingsService.WorkSecondsPerDay;
+            if (workSecondsPerDay <= 0)
                 throw new InvalidOperationException("Workday hours have not been configured.");
-            
-            var workDayMinutes = (_workdaySettingsService.StopTime - _workdaySettingsService.StartTime).TotalMinutes;
 
             var currentDate = GetValidWorkingWindow(startDate, direction);
 
-            double startProgress = (currentDate.TimeOfDay - _workdaySettingsService.StartTime).TotalMinutes / workDayMinutes;
-            double totalWorkdaysFromStart = startProgress + workdaysToAdd;
+            var ticksPerSecond = (decimal)TimeSpan.TicksPerSecond;
+            var startSecondsIntoDay = (currentDate.TimeOfDay.Ticks - _workdaySettingsService.StartTime.Ticks) / ticksPerSecond;
+            var totalWorkSeconds = startSecondsIntoDay + (workdaysToAdd * workSecondsPerDay);
 
-            int wholeDaysToJump = (int)Math.Floor(totalWorkdaysFromStart);
-            double remainingFraction = totalWorkdaysFromStart - wholeDaysToJump;
+            var wholeDaysToJump = (int)Math.Floor(totalWorkSeconds / workSecondsPerDay);
+            var remainingSeconds = totalWorkSeconds - (wholeDaysToJump * workSecondsPerDay);
 
-            for (int i = 0;  i < Math.Abs(wholeDaysToJump); i++)
+            for (var i = 0; i < Math.Abs(wholeDaysToJump); i++)
             {
                 currentDate = JumpToNextValidDay(currentDate, wholeDaysToJump >= 0 ? 1 : -1);
             }
 
-            return currentDate.Date
-            .Add(_workdaySettingsService.StartTime)
-            .AddMinutes(Math.Round(remainingFraction * workDayMinutes));
+            var resultTime = currentDate.Date
+                .Add(_workdaySettingsService.StartTime)
+                .AddSeconds((double)remainingSeconds);
+
+            return RoundToNearestMinute(resultTime, workdaysToAdd >= 0);
+        }
+
+        private static DateTime RoundToNearestMinute(DateTime dt, bool addWorkdays)
+        {
+            var secondsSinceMidnight = dt.TimeOfDay.TotalSeconds;
+            var minutes = addWorkdays
+                ? Math.Floor(secondsSinceMidnight / 60)
+                : Math.Ceiling(secondsSinceMidnight / 60);
+            var roundedSeconds = minutes * 60;
+            var roundedTime = TimeSpan.FromSeconds(roundedSeconds);
+            return dt.Date.Add(roundedTime);
         }
 
         private DateTime GetValidWorkingWindow(DateTime date, int direction)

@@ -28,7 +28,7 @@ namespace WorkdayCalendar.Test
             var startDate = new DateTime(2004, 5, 24, 18, 5, 0);
 
             // Act - add -5.5 workdays (document first example)
-            var result = calculator.CalculateWorkday(startDate, -5.5);
+            var result = calculator.CalculateWorkday(startDate, -5.5m);
 
             // Assert - result should be 14.05.2004 12:00
             var expected = new DateTime(2004, 5, 14, 12, 0, 0);
@@ -98,7 +98,7 @@ namespace WorkdayCalendar.Test
 
             var startDate = new DateTime(2004, 5, 24, 12, 0, 0);
 
-            var result = calculator.CalculateWorkday(startDate, 0.25);
+            var result = calculator.CalculateWorkday(startDate, 0.25m);
 
             var expected = new DateTime(2004, 5, 24, 14, 0, 0);
 
@@ -119,6 +119,7 @@ namespace WorkdayCalendar.Test
             var mockSettings = new Mock<IWorkdaySettingsService>();
             mockSettings.Setup(s => s.StartTime).Returns(TimeSpan.FromHours(8));
             mockSettings.Setup(s => s.StopTime).Returns(TimeSpan.FromHours(16));
+            mockSettings.Setup(s => s.WorkSecondsPerDay).Returns(28800m);
 
             return new WorkDayCalculatorService(mockHolidayRegistry.Object, mockSettings.Object);
         }

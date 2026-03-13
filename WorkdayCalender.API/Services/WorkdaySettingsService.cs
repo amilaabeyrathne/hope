@@ -15,5 +15,7 @@ namespace WorkdayCalendar.API.Services
         public TimeSpan StartTime => _startTime;
 
         public TimeSpan StopTime => _stopTime;
+
+        public decimal WorkSecondsPerDay => (decimal)(_stopTime.Ticks - _startTime.Ticks) / TimeSpan.TicksPerSecond;
     }
 }

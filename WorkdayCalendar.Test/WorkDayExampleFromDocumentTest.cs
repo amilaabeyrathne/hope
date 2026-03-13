@@ -26,15 +26,16 @@ namespace WorkdayCalendar.Test
         }
 
         [Theory]
-        [InlineData(18, 5,  -5.5,       2004, 5, 14, 12,  0)]
-        [InlineData(19, 3,  44.723656,  2004, 7, 27, 13, 47)]
-        [InlineData(18, 3,  -6.7470217, 2004, 5, 13, 10,  2)]
-        [InlineData( 8, 3,  12.782709,  2004, 6, 10, 14, 18)]
-        [InlineData( 7, 3,   8.276628,  2004, 6,  4, 10, 12)]
+        [InlineData(18, 5,  "-5.5",       2004, 5, 14, 12,  0)]
+        [InlineData(19, 3,  "44.723656",  2004, 7, 27, 13, 47)]
+        [InlineData(18, 3,  "-6.7470217", 2004, 5, 13, 10,  2)]
+        [InlineData( 8, 3,  "12.782709",  2004, 6, 10, 14, 18)]
+        [InlineData( 7, 3,  "8.276628",   2004, 6,  4, 10, 12)]
         public void AddWorkdays_DocumentExamples_ReturnsExpectedDate(
-            int startHour, int startMin, double workdays,
+            int startHour, int startMin, string workdaysStr,
             int expectedYear, int expectedMonth, int expectedDay, int expectedHour, int expectedMin)
         {
+            var workdays = decimal.Parse(workdaysStr, System.Globalization.CultureInfo.InvariantCulture);
             var startDate = new DateTime(2004, 5, 24, startHour, startMin, 0);
             var expected  = new DateTime(expectedYear, expectedMonth, expectedDay, expectedHour, expectedMin, 0);
 

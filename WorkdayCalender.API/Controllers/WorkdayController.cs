@@ -65,7 +65,7 @@ namespace WorkdayCalendar.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public ActionResult<DateTime> Calculate(
             [FromQuery, SwaggerParameter("Start date and time")] DateTime start,
-            [FromQuery, SwaggerParameter("Number of working days to add (negative to subtract)")] double days)
+            [FromQuery, SwaggerParameter("Number of working days to add (negative to subtract)")] decimal days)
         {
             var result = _workdayCalculatorService.CalculateWorkday(start, days);
 
