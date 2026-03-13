@@ -1,11 +1,9 @@
-using WorkdayCalendar.API.Models;
-
 namespace WorkdayCalendar.API.Services
 {
     public interface IHolidayRegistryService
     {
-        void AddHoliday(HolidaysRequest holidaysRequest);
-        void AddRecurringHoliday(RecurringHolidaysRequest recurringHolidaysRequest);
+        void AddHolidays(IEnumerable<DateOnly> dates);
+        void AddRecurringHolidays(IEnumerable<(int Month, int Day)> holidays);
         bool IsWorkday(DateTime date);
     }
 }

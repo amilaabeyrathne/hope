@@ -1,5 +1,3 @@
-using WorkdayCalendar.API.Models;
-
 namespace WorkdayCalendar.API.Services
 {
     public class HolidayRegistryService : IHolidayRegistryService
@@ -7,19 +5,19 @@ namespace WorkdayCalendar.API.Services
         private readonly HashSet<DateOnly> _singleHolidays = new();
         private readonly HashSet<(int Month, int Day)> _recurringHolidays = new();
 
-        public void AddHoliday(HolidaysRequest holidaysRequest)
+        public void AddHolidays(IEnumerable<DateOnly> dates)
         {
-            foreach (var date in holidaysRequest.Holidays)
+            foreach (var date in dates)
             {
-                _singleHolidays.Add(DateOnly.FromDateTime(date));
+                _singleHolidays.Add(date);
             }
         }
 
-        public void AddRecurringHoliday(RecurringHolidaysRequest recurringHolidaysRequest)
+        public void AddRecurringHolidays(IEnumerable<(int Month, int Day)> holidays)
         {
-            foreach (var holiday in recurringHolidaysRequest.RecurringHolidays)
+            foreach (var holiday in holidays)
             {
-                _recurringHolidays.Add((holiday.Month, holiday.Day));
+                _recurringHolidays.Add(holiday);
             }
         }
 

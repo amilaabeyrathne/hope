@@ -1,40 +1,10 @@
 using Moq;
-using WorkdayCalendar.API.Models;
 using WorkdayCalendar.API.Services;
 
 namespace WorkdayCalendar.Test
 {
     public class WorkDayCalculatorServiceTest
     {
-        [Fact]
-        public void AddWorkdays_FromDocumentExample_ReturnsExpectedDate()
-        {
-            // Arrange - from document: workday 08:00-16:00, recurring 17 May, single 27 May 2004
-            var holidayRegistry = new HolidayRegistryService();
-            holidayRegistry.AddRecurringHoliday(new RecurringHolidaysRequest
-            {
-                RecurringHolidays = [new RecurringHoliday { Month = 5, Day = 17 }]
-            });
-            holidayRegistry.AddHoliday(new HolidaysRequest
-            {
-                Holidays = [new DateTime(2004, 5, 27)]
-            });
-
-            var workdaySettings = new WorkdaySettingsService();
-            workdaySettings.SetWorkdayHours(TimeSpan.FromHours(8), TimeSpan.FromHours(16));
-
-            var calculator = new WorkDayCalculatorService(holidayRegistry, workdaySettings);
-
-            var startDate = new DateTime(2004, 5, 24, 18, 5, 0);
-
-            // Act - add -5.5 workdays (document first example)
-            var result = calculator.CalculateWorkday(startDate, -5.5m);
-
-            // Assert - result should be 14.05.2004 12:00
-            var expected = new DateTime(2004, 5, 14, 12, 0, 0);
-            Assert.Equal(expected, result);
-        }
-
         [Fact]
         public void AddWorkdays_OneDayToTheCurrent_ToTheEndOfDay_ReturnsExpectedDate()
         {

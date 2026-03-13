@@ -1,4 +1,3 @@
-using WorkdayCalendar.API.Models;
 using WorkdayCalendar.API.Services;
 
 namespace WorkdayCalendar.Test
@@ -10,14 +9,8 @@ namespace WorkdayCalendar.Test
         public WorkDayExampleFromDocumentTest()
         {
             var holidayRegistry = new HolidayRegistryService();
-            holidayRegistry.AddRecurringHoliday(new RecurringHolidaysRequest
-            {
-                RecurringHolidays = [new RecurringHoliday { Month = 5, Day = 17 }]
-            });
-            holidayRegistry.AddHoliday(new HolidaysRequest
-            {
-                Holidays = [new DateTime(2004, 5, 27)]
-            });
+            holidayRegistry.AddRecurringHolidays([(5, 17)]);
+            holidayRegistry.AddHolidays([DateOnly.FromDateTime(new DateTime(2004, 5, 27))]);
 
             var workdaySettings = new WorkdaySettingsService();
             workdaySettings.SetWorkdayHours(TimeSpan.FromHours(8), TimeSpan.FromHours(16));

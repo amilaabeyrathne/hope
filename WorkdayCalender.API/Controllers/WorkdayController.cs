@@ -29,7 +29,8 @@ namespace WorkdayCalendar.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public IActionResult AddHoliday([FromBody] HolidaysRequest request)
         {
-            _holidayRegistryService.AddHoliday(request);
+            var dates = request.Holidays.Select(DateOnly.FromDateTime);
+            _holidayRegistryService.AddHolidays(dates);
             return Ok();
         }
 
@@ -41,7 +42,8 @@ namespace WorkdayCalendar.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         public IActionResult AddRecurringHoliday([FromBody] RecurringHolidaysRequest request)
         {
-            _holidayRegistryService.AddRecurringHoliday(request);
+            var holidays = request.RecurringHolidays.Select(h => (h.Month, h.Day));
+            _holidayRegistryService.AddRecurringHolidays(holidays);
             return Ok();
         }
 
