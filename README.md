@@ -15,28 +15,6 @@ A .NET 9 Web API that calculates resulting datetimes when adding or subtracting 
 
 - [.NET 9 SDK](https://dotnet.microsoft.com/download)
 
-## Getting Started
-
-### Build
-
-```bash
-dotnet build
-```
-
-### Run
-
-```bash
-dotnet run --project WorkdayCalender.API
-```
-
-The API runs at `https://localhost:5001` (or `http://localhost:5000`). Swagger UI is available in Development at `/swagger`.
-
-### Test
-
-```bash
-dotnet test
-```
-
 ## API Endpoints
 
 | Method | Endpoint | Description |
@@ -133,7 +111,21 @@ WorkdayCalendar/
 ├── WorkdayCalendar.Test/         # Unit tests (xUnit, Moq)
 └── WorkdayCalendar.sln
 ```
+## Assumptions
 
-## License
+- **Singleton service lifetime** – `IHolidayRegistryService`, `IWorkdaySettingsService`, and `IWorkDayCalculatorService` are registered as singletons in `Program.cs`. Holiday and workday configuration is shared across all requests. For multi-tenant or per-request configuration, these would need to be scoped or transient (If a DB is used in the future).
 
-Internal / no license specified.
+- **In-memory configuration** - Holidays and workday settings are stored only in memory. They are lost on restart and are not persisted.
+
+- **Configuration order** - Workday hours must be set before any calculation. There is no default; unconfigured hours throw.
+
+- **Max consecutive non-working days** - If more than 365 consecutive non-working days are configured, the API throws.
+
+- **Start outside work hours** – If the start time is before work starts, it is treated as the workday start; if after work ends, as the workday end. The “closest valid point” interpretation is assumed.
+
+- **No validation of date range** – Very large days values are accepted; extreme results may be unexpected but are not explicitly rejected.
+
+- **Directional rounding of fractional minutes** – The final result is rounded to the nearest minute using *asymmetric* rounding based on direction: **floor** when adding workdays, **ceiling** when subtracting. This avoids accidentally jumping to the next day when the computed time is very close to the workday boundary (e.g. 15:59:59.99). The assignment did not specify this behavior explicitly; it was inferred by reverse engineering the provided reference examples to match their expected outputs.
+
+
+
